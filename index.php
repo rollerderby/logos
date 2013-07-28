@@ -5,8 +5,15 @@
   </head>
 <?php
 // Iterate through all files, and update/display/create info about each of them.
-// Nothing here yet. Move along.
 
+require_once("DerbyLogos.php");
+
+$dir = isset($_REQUEST['dir'])?$_REQUEST['dir']:null;
+$a = new Logos($dir);
+
+$dirs = $a->getDirectories();
+
+$a->showDirectories($dirs);
 
 ?>
 </html>
