@@ -17,6 +17,13 @@ class Logos {
 		$this->dir = $dir;
 	}
 
+	function cleanHTML($string) {
+		// Replace < and > with &gt; and &lt;
+		$source = array( '/</', '/>/' );
+		$dest = array( '&lt;', '&gt;' );
+		return preg_replace($source, $dest, $string);
+	}
+
 	function canWrite() {
 		// Try to create a file, return true if you can
 		$filename = tempnam($this->dir, "canwrite");
@@ -37,7 +44,7 @@ class Logos {
 		return array_filter(glob("$dir/*"), 'is_dir');
 	}
 
-	function noSubdirectories($dir = null) {
+	function noSubdirs($dir = null) {
 		if ($dir == null) 
 			$dir = $this->dir;
 		$subdirs = $this->getDirectories($dir);
@@ -48,10 +55,24 @@ class Logos {
 	}
 
 
-
 	function showDirectories($dirs) {
 		foreach ($dirs as $dir) {
+			$dir = $this->cleanHTML($dir);
 			print "<a href='index.php?dir=$dir'>$dir</a><br />\n";
+		}
+	}
+
+
+	function showFiles() {
+		// Note: Does not match hidden files (eg, .status)
+		$all_files = glob("$this->dir/*");
+		foreach ($all_files as $filename) {
+			$filename = $this->cleanHTML($filename);
+			print "<table><tr><td>$filename</td><td style='background-color: black'>";
+			if (preg_match('/(png|bmp|jpg|gif)$/', $filename)) {
+				print "<img src='$filename'>";
+			}
+			print "</td></tr></table>\n";
 		}
 	}
 }

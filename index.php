@@ -11,9 +11,14 @@ require_once("DerbyLogos.php");
 $dir = isset($_REQUEST['dir'])?$_REQUEST['dir']:null;
 $a = new Logos($dir);
 
-$dirs = $a->getDirectories();
-
-$a->showDirectories($dirs);
+if ($a->noSubdirs()) {
+	// This is the end of the tree. Display files
+	$a->showFiles();
+} else {
+	// Subdirectories. List them.
+	$dirs = $a->getDirectories();
+	$a->showDirectories($dirs);
+}
 
 ?>
 </html>
