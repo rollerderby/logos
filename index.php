@@ -13,7 +13,7 @@ $a = new Logos($dir);
 
 if ($a->noSubdirs()) {
 	// This is the end of the tree. Display files
-	$a->showFiles();
+	$a->showLeague();
 } else {
 	// Subdirectories. List them.
 	$dirs = $a->getDirectories();
