@@ -9,6 +9,12 @@
 require_once("DerbyLogos.php");
 
 $dir = isset($_REQUEST['dir'])?$_REQUEST['dir']:null;
+
+// Sanity check $dir
+$dir = preg_replace('/\.\./', '', $dir); // Remove ..
+$dir = preg_replace('/\/\//', '/', $dir);  // Reduce // to /
+
+$dir = 
 $a = new Logos($dir);
 
 if ($a->noSubdirs()) {
