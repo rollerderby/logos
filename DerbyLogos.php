@@ -100,8 +100,12 @@ class Logos {
 					print "<tr><td>".basename($filename)."</td>";
 					print "<td colspan=5>Image missing</td>\n";
 				}
+				print "<td>Assign to Team: <select>";
+				foreach ($teams as $name => $teamsel) { print "<option value='$name'>".$teamsel['description']."</option>\n"; }
+				print "</select></td>";
 
-				print "</tr>";
+				print "<td><input type='submit' value'Update' /></td>";
+				print "</tr>\n";	
 			}
 			print "</table>\n";
 		}
@@ -176,6 +180,9 @@ class Logos {
 	function addImageToTeam($teamname, $image) {
 		if (!isset($this->status['teams'][$teamname])) 
 			$this->addTeam($teamname);
+
+		// Sanity Check image name.
+		$image = preg_replace('/\/\//', '/\//', $image);  // Reduce // to /
 
 		$logo_array = array ( 'filename' => $image, 'name' => $image, 'black' => false, 'white' => false, 'other' => false);
 		$this->status['teams'][$teamname]['logos'][] = $logo_array;
