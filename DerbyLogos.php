@@ -107,11 +107,6 @@ class Logos {
 		}
 	}
 
-	function displayStatus($dir) {
-		$this->getStatus($dir);
-		$allStatus = array (""); 
-	}
-		
 	function getStatus($dir) {
 		if ($dir == null)
 			$dir=$this->dir;
