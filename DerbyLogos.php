@@ -125,6 +125,10 @@ class Logos {
 		// Figure out everything we already know about the league.
 		// I'm just going to assume the the directory seperator is '/'. This is windows unsafe.
 		$parts = explode("/", $dir);
+
+		// If first directory entry is ".", ignore it.
+		if ($parts[0] == ".")
+			array_shift($parts);
 		$leaguename = basename($dir);
 		$country = $parts[0];
 		if (isset($parts[2])) {
