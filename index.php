@@ -8,14 +8,13 @@
 
 require_once("DerbyLogos.php");
 
+print_r($_REQUEST);
 $dir = isset($_REQUEST['dir'])?$_REQUEST['dir']:null;
 
-// Sanity check $dir
-$dir = preg_replace('/\.\./', '', $dir); // Remove ..
-$dir = preg_replace('/\/\//', '/', $dir);  // Reduce // to /
-
-$dir = 
 $a = new Logos($dir);
+
+// Handle any updates
+$a->updateData($_REQUEST);
 
 if ($a->noSubdirs()) {
 	// This is the end of the tree. Display files
