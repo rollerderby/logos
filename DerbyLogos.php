@@ -3,7 +3,7 @@
 class Logos {
 
 	private $dir = null;
-	private $defaults = array ("facebook_page" => null, "league_email" => null);
+	private $defaults = array ("facebook_page" => null, "league_email" => null, "copyright_waiver" => null);
 
 	public $status;
 
@@ -85,8 +85,13 @@ class Logos {
 		foreach ($teams as $teamname => $team) {
 			print "<form method='post'>\n";
 			print "<h2>".$team['description']." <a href='index.php?dir=".$this->getPreviousDirectory($dir)."'>Back</a></h2>";
+			$this->displayLeagueDetails();
 			print "<input type='hidden' name='teamname' value='$teamname'>\n";
-			print "<input type='text' name='".$teamname."' value='".$team['description']."'><input type='submit' value='Rename' name='action' /><input type='submit' name='action' value='Delete'><input type='submit' name='action' value='Create'></form>\n";
+			print "<input type='text' name='".$teamname."' value='".$team['description']."'><input type='submit' value='Update' name='action' /><input type='submit' name='action' value='Delete'><input type='submit' name='action' value='Create'>\n";
+
+			// Display summary information about the league
+
+			print "</form>";
 			print "<table>";
 			foreach ($team['logos'] as $index => $img_array) {
 
@@ -118,7 +123,7 @@ class Logos {
 					print "<option value='$name'>".$teamsel['description']."</option>\n"; }
 				print "</select></td>";
 
-				print "<td><input type='submit' name='action' value='Update' /></td>";
+				print "<td><input type='submit' name='action' value='Change' /></td>";
 				print "<td><input type='submit' name='action' value='Remove' /></td>";
 				print "</form></tr>\n";	
 			}
@@ -146,6 +151,21 @@ class Logos {
 		}
 		print "</form>\n";
 
+	}
+
+	function displayLeagueDetails() {
+		// Display update-able information about contacts, facebook page, and copyright.
+		$deets = array("Facebook Page" => "facebook_page", "League Contact" => "league_email", "Logo usage granted by" => "copyright_waiver");
+
+		print "<table>";
+		foreach ($deets as $text => $var) {
+			if (!isset($this->status[$var])) {
+				$this->status[$var] = 'Unknown';
+				$this->updateStatusFile();
+			}
+			print "<tr><td>$text</td><td><input type='text' name='$var' value='".$this->cleanHTML($this->status[$var])."'></td></tr>";
+		}
+		print "</table>";
 	}
 
 	private function explodeTeam($dir) {
@@ -241,11 +261,10 @@ class Logos {
 		$this->updateStatusFile();
 	}
 
-	function doRenameTeam($teamname, $newname) {
+	function doUpdateTeam($teamname, $newname) {
 		if (!isset($this->status['teams'][$teamname]))
 			return false;
 		$this->status['teams'][$teamname]['description'] = $this->cleanHTML($newname);
-		$this->updateStatusFile();
 	}
 
 	function getTeams() {
@@ -264,11 +283,11 @@ class Logos {
 			case 'Remove':
 				$this->removeLogo($req);
 				break;
-			case 'Update':
+			case 'Change':
 				$this->updateLogo($req);
 				break;
-			case 'Rename': 
-				$this->renameTeam($req);
+			case 'Update': 
+				$this->updateTeam($req);
 				break;
 			case 'Create':
 				$this->createTeam($req);
@@ -363,18 +382,23 @@ class Logos {
 
 	}
 
-	function renameTeam($req) {
-		// Not QUITE as easy as the previous ones.
+	function updateTeam($req) {
 		$dir = isset($req['dir'])?$this->checkFilename($req['dir']):null;
-		$teamname = isset($req['teamname'])?$req['teamname']:null;
+		$this->getStatus($dir);
+
+		// Not QUITE as easy as the previous ones.
+		foreach (array ('facebook_page', 'league_email', 'copyright_waiver') as $var) {
+			$this->status[$var] = isset($req[$var])?$this->cleanHTML($req[$var]):null;
+		}
+
+		$teamname = isset($req['teamname'])?$this->checkFilename($req['teamname']):null;
 		$newname = isset($req[$teamname])?$req[$teamname]:null;
 
 		if ($dir == null || $teamname == null || $newname == null) 
 			return false;
 
-		$this->getStatus($dir);
 
-		$this->doRenameTeam($teamname, $newname); 
+		$this->doUpdateTeam($teamname, $newname); 
 
 		$this->updateStatusFile();
 	}
@@ -408,5 +432,4 @@ class Logos {
 		array_pop($arr);
 		return join("/", $arr);
 	}
-		
 }
