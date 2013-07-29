@@ -115,7 +115,7 @@ class Logos {
 					print "<td>Other? <input type='checkbox' name='other' value='true' $other></td>";
 				} else {
 					// File missing. 
-					print "<tr><td>".basename($filename)."</td>";
+					print "<tr><form method='post'><input type='hidden' name='filename' value='".$filename."'><td>".basename($filename)."</td>";
 					print "<td colspan=5>Image missing</td>\n";
 				}
 				print "<td>Assign to Team: <select name='teamname'>";
