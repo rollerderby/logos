@@ -84,7 +84,7 @@ class Logos {
 
 		foreach ($teams as $teamname => $team) {
 			print "<form method='post'>\n";
-			print "<h2>".$team['description']."</h2>";
+			print "<h2>".$team['description']." <a href='index.php?dir=".$this->getPreviousDirectory($dir)."'>Back</a></h2>";
 			print "<input type='hidden' name='teamname' value='$teamname'>\n";
 			print "<input type='text' name='".$teamname."' value='".$team['description']."'><input type='submit' value='Rename' name='action' /><input type='submit' name='action' value='Delete'><input type='submit' name='action' value='Create'></form>\n";
 			print "<table>";
@@ -235,10 +235,8 @@ class Logos {
 	}
 
 	function addTeam($teamname, $description) {
-		print "Adding $teamname with $description<br />\n";
 		if (isset($this->status['teams'][$teamname]))
 			return false;
-		print "Here\n";
 		$this->status['teams'][$teamname]['description'] = $this->cleanHTML($description);
 		$this->updateStatusFile();
 	}
@@ -404,4 +402,11 @@ class Logos {
 
 		$this->updateStatusFile();
 	}
+
+	function getPreviousDirectory($dir) {
+		$arr = explode("/", $dir);
+		array_pop($arr);
+		return join("/", $arr);
+	}
+		
 }
