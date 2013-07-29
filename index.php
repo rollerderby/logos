@@ -4,11 +4,9 @@
     <title>Roller Derby League Logo manager</title>
   </head>
 <?php
-// Iterate through all files, and update/display/create info about each of them.
 
 require_once("DerbyLogos.php");
 
-print_r($_REQUEST);
 $dir = isset($_REQUEST['dir'])?$_REQUEST['dir']:null;
 
 $a = new Logos($dir);

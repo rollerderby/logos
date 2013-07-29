@@ -176,6 +176,12 @@ class Logos {
 			$this->createStatusFile($dir);
 		}
 		$this->status = json_decode(file_get_contents("$dir/.status"), true);
+
+		// Bit of Sanity checking. There should always be one team there, at least.
+		if (count($this->status['teams']) == 0) {
+			// Add default team.
+			$this->addTeam("default", "Default Team");
+		}
 	}
 
 	function createStatusFile($dir) {
@@ -229,6 +235,7 @@ class Logos {
 	}
 
 	function addTeam($teamname, $description) {
+		print "Adding $teamname with $description<br />\n";
 		if (isset($this->status['teams'][$teamname]))
 			return false;
 		print "Here\n";
@@ -269,6 +276,7 @@ class Logos {
 				$this->createTeam($req);
 				break;
 			case 'Delete':
+				$this->deleteTeam($req);
 		}
 	}
 
@@ -373,4 +381,27 @@ class Logos {
 		$this->updateStatusFile();
 	}
 
+	function deleteTeam($req) {
+		$dir = isset($req['dir'])?$this->checkFilename($req['dir']):null;
+		$teamname = isset($req['teamname'])?$req['teamname']:null;
+
+		$this->getStatus($dir);
+
+		// Bye-Bye, team.
+		unset($this->status['teams'][$teamname]);
+
+		$this->updateStatusFile();
+	}
+
+	function createTeam($req) {
+		$dir = isset($req['dir'])?$this->checkFilename($req['dir']):null;
+		$teamname = isset($req['teamname'])?$this->cleanHTML($req['teamname']):null;
+		$newname = isset($req[$teamname])?$this->cleanHTML($req[$teamname]):null;
+
+		$this->getStatus($dir);
+
+		$this->addTeam(preg_replace('/ /', '_', $newname), $newname);
+
+		$this->updateStatusFile();
+	}
 }
