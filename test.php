@@ -2,6 +2,10 @@
 
 require_once("DerbyLogos.php");
 
-$x = new Logos();
+$x = new Logos("");
+print "I have ".$x->dir."\n";
 
-$x->showDirectories($x->getDirectories("au/Queensland"));
+$dir = "./foo/blah";
+$z = $x->getAllDirectories();
+print_r($z);
+
