@@ -46,20 +46,30 @@ class Logos {
 		}
 	}
 
-	function getDirectories($dir = null) {
+	function getAllUnderFolder($dir = null) {
 		if ($dir == null)
 			$dir = $this->dir;
 		if (preg_match("/\.\./", $dir)) 
 			return false;	
 		// Return a list of all directories under the Directory specified.
-		return array_filter(glob("$dir/*"), 'is_dir');
+		return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array_filter(glob("$dir/*"), 'is_file'));
 	}
+
+	function getAllDirectories($dir = null) {
+		if ($dir == null)
+			$dir = $this->dir;
+		if (preg_match("/\.\./", $dir)) 
+			return false;	
+		$tmparr = $this->getAllUnderFolder($dir);
+		return $tmparr['directories'];
+	}
+
 
 	function noSubdirs($dir = null) {
 		if ($dir == null) 
 			$dir = $this->dir;
-		$subdirs = $this->getDirectories($dir);
-		if ($subdirs == array())
+		$subdirs = $this->getAllUnderFolder($dir);
+		if ($subdirs['directories'] == array())
 			return true;
 		else
 			return false;
