@@ -2,7 +2,7 @@
 
 class Logos {
 
-	private $dir = null;
+	public  $dir = null;
 	private $defaults = array ("facebook_page" => null, "league_email" => null, "copyright_waiver" => null);
 
 	public $status;
@@ -14,13 +14,27 @@ class Logos {
 		$this->updateDir($dir);
 	}
 
-	function updateDir($dir) {
-		// Are people trying to be clever?
-		if (preg_match("/\.\./", $dir)) 
-			return false;
-		$this->dir = $dir;
+	function cleanPath(&$dir = null) { // Reference
+		if ($dir == null) {
+			$dir = $this->dir;
+			return;
+		}
+		$newDir = array();
+		$parts = explode("/", $dir);
+		if ($parts[0] == "") { // Leading /
+			array_shift($parts);
+		}
+		foreach ($parts as $part) {
+			if ($part == "..") { // Back a directory, just strip it off.
+				array_pop($newDir);
+			} elseif ($part != "." ) {
+				array_push($newDir, $part);
+			}
+		}
+		$dir = join("/", $newDir);
+		return; 
 	}
-
+		
 	function cleanHTML($string) {
 		// Replace < and > with &gt; and &lt;
 		$source = array( '/</', '/>/', "/'/", '/"/' );
@@ -29,10 +43,13 @@ class Logos {
 	}
 
 	function checkFilename($filename) {
-		$filename = preg_replace("/\/+/", "/", $filename);
-		$filename = preg_replace("/\.\./", "", $filename);
-		$filename = preg_replace("/^\//", "", $filename);
+		$this->cleanPath($filename);
 		return $filename;
+	}
+
+	function updateDir($dir) {
+		$this->cleanPath($dir);
+		$this->dir = $dir;
 	}
 
 	function canWrite() {
@@ -47,27 +64,22 @@ class Logos {
 	}
 
 	function getAllUnderFolder($dir = null) {
-		if ($dir == null)
-			$dir = $this->dir;
-		if (preg_match("/\.\./", $dir)) 
-			return false;	
+		$this->cleanPath($dir);
+		if ($dir == "") 
+			$dir = ".";
 		// Return a list of all directories under the Directory specified.
 		return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array_filter(glob("$dir/*"), 'is_file'));
 	}
 
 	function getAllDirectories($dir = null) {
-		if ($dir == null)
-			$dir = $this->dir;
-		if (preg_match("/\.\./", $dir)) 
-			return false;	
+		$this->cleanPath($dir);
 		$tmparr = $this->getAllUnderFolder($dir);
 		return $tmparr['directories'];
 	}
 
 
 	function noSubdirs($dir = null) {
-		if ($dir == null) 
-			$dir = $this->dir;
+		$this->cleanPath($dir);
 		$subdirs = $this->getAllUnderFolder($dir);
 		if ($subdirs['directories'] == array())
 			return true;
@@ -83,8 +95,7 @@ class Logos {
 	}
 
 	function showLeague($dir = null) {
-		if ($dir == null)
-			$dir = $this->dir;
+		$this->cleanPath($dir);
 		$this->getStatus($dir);
 
 		$all_images = $this->getAllImages($dir);
