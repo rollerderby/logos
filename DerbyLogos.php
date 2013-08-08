@@ -68,7 +68,12 @@ class Logos {
 		if ($dir == "") 
 			$dir = ".";
 		// Return a list of all directories under the Directory specified.
-		return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array_filter(glob("$dir/*"), 'is_file'));
+		$dirs = array_filter(glob("$dir/*"), 'is_dir');
+		$files = array_filter(glob("$dir/*"), 'is_file');
+		if ($dir != ".") 
+			return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array_filter(glob("$dir/*"), 'is_file'));
+		else
+			return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array());
 	}
 
 	function getAllDirectories($dir = null) {
@@ -210,9 +215,8 @@ class Logos {
 		}
 		return $ret;
 	}
-	function getStatus($dir) {
-		if ($dir == null)
-			$dir=$this->dir;
+	function getStatus($dir = null) {
+		$this->cleanPath($dir);
 		if (!file_exists("$dir/.status")) {
 			$this->createStatusFile($dir);
 		}
