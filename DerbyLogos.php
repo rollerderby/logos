@@ -69,11 +69,14 @@ class Logos {
 			$dir = ".";
 		// Return a list of all directories under the Directory specified.
 		$dirs = array_filter(glob("$dir/*"), 'is_dir');
+		$dirs = preg_replace('/^\.\//', '', $dirs);
 		$files = array_filter(glob("$dir/*"), 'is_file');
+		$files = preg_replace('/^.\//', '', $files);
+
 		if ($dir != ".") 
-			return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array_filter(glob("$dir/*"), 'is_file'));
+			return array("directories" => $dirs, "files" => $files);
 		else
-			return array("directories" => array_filter(glob("$dir/*"), 'is_dir'), "files" => array());
+			return array("directories" => $dirs, "files" => array());
 	}
 
 	function getAllDirectories($dir = null) {
