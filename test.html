@@ -1,0 +1,50 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+</head>
+<body>
+<h1 id="foo">Hello</h1>
+<p>This is text.  <a href="#"  id="click" onclick="return false;">Click this</a> to do stuff</p>
+<div id="maintext"></div>
+<script>
+$(function() {
+    $("#click").click(function() { 
+	console.log("derp"); 
+	$.get('http://192.168.1.1/logos/api.php', function(data) { displaystuff(data); });
+    });
+
+});
+
+function loadData(dirName) {
+	console.log("Given "+dirName);
+	$.get("http://192.168.1.1/logos/api.php", { dir: dirName })
+	.done(function(data) { displaystuff(data); });
+}
+
+function displaystuff(data) {
+	console.log(data);
+	// I have data. I need to display stuff
+	var newHTML = "";
+	if (!("status" in data)) { return false; }
+	var status = data['status'];
+	if (status != null) {
+		if (status['title'] !== undefined) {
+			newHTML = "<h1>"+data['status']['title']+"</h1>";
+		}
+		if (typeof(data['status']['description']) != 'undefined')  {
+			newHTML = "<p>"+data['status']['description']+"</p>";
+		}
+	}
+	newHTML += "<table>";
+	$.each( data['data']['directories'], function(i, v) {
+		newHTML += "<tr><td><span class='clickable' data-id='"+v+"'>"+v+"</span></td></tr>";
+	});
+	$("#maintext").html(newHTML);
+   	$(".clickable").on("click", function(x) { loadData($(this).data('id')) });
+}
+
+</script>
+	
+
+
