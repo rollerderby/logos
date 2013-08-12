@@ -30,7 +30,7 @@ $(function() {
 
 function loadData() {
     // Figure out where we should be.
-    var dirName = window.location.hash.replace(/^#/, '');
+    var dirName = decodeURIComponent(window.location.hash.replace(/^#/, ''));
     console.log("Given "+dirName);
     $.get(apiURL, { cmd: "list", dir: dirName })
     .done(function(data) { displaystuff(data); });
@@ -116,7 +116,7 @@ function displaystuff(data) {
     }
     $("#maintext").html(newHTML);
     $.each($(".used"), function() { loadLogo($(this)); });
-    $(".clickable").on("click", function(x) { location.hash = $(this).data('id'); });
+    $(".clickable").on("click", function(x) { location.hash = encodeURIComponent($(this).data('id')); });
 }
 
 </script>
