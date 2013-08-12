@@ -4,6 +4,7 @@
     <title>Roller Derby League Logo manager</title>
   </head>
 <?php
+exit; // Remove this to actually use it.
 
 require_once("DerbyLogos.php");
 
