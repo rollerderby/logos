@@ -106,7 +106,7 @@ class Logos {
 	function showDirectories($dirs) {
 		foreach ($dirs as $dir) {
 			$dir = $this->cleanHTML($dir);
-			print "<a href='index.php?dir=$dir'>$dir</a><br />\n";
+			print "<a href='manage.php?dir=$dir'>$dir</a><br />\n";
 		}
 	}
 
@@ -121,7 +121,7 @@ class Logos {
 
 		foreach ($teams as $teamname => $team) {
 			print "<form method='post'>\n";
-			print "<h2>".$team['description']." <a href='index.php?dir=".$this->getPreviousDirectory($dir)."'>Back</a></h2>";
+			print "<h2>".$team['description']." <a href='manage.php?dir=".$this->getPreviousDirectory($dir)."'>Back</a></h2>";
 			$this->displayLeagueDetails();
 			print "<input type='hidden' name='teamname' value='$teamname'>\n";
 			print "<input type='text' name='".$teamname."' value='".$team['description']."'><input type='submit' value='Update' name='action' /><input type='submit' name='action' value='Delete'><input type='submit' name='action' value='Create'>\n";
