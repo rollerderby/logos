@@ -230,6 +230,7 @@ class Logos {
 			// Add default team.
 			$this->addTeam("default", "Default Team");
 		}
+		return $this->status;
 	}
 
 	function createStatusFile($dir) {
