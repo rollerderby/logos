@@ -2,6 +2,15 @@
 <head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
 </script>
+
+<style>
+    .logo { width: 200px }
+    .whitebg { background-color: white; color: black }
+    .blackbg { background-color: black; color: white }
+    .otherbg { background-color: green; color: white }
+    
+</style>
+
 </head>
 <body>
 <h1 id="foo">Hello</h1>
@@ -9,42 +18,100 @@
 <div id="maintext"></div>
 <script>
 $(function() {
+   window.APIurl = "http://192.168.1.1/logos/api.php";
+
     $("#click").click(function() { 
-	console.log("derp"); 
-	$.get('http://192.168.1.1/logos/api.php', function(data) { displaystuff(data); });
+    console.log("derp"); 
+    $.get(APIurl, { cmd: "list" }, function(data) { displaystuff(data); });
     });
+
+  
 
 });
 
 function loadData(dirName) {
-	console.log("Given "+dirName);
-	$.get("http://192.168.1.1/logos/api.php", { dir: dirName })
-	.done(function(data) { displaystuff(data); });
+    console.log("Given "+dirName);
+    $.get(APIurl, { cmd: "list", dir: dirName })
+    .done(function(data) { displaystuff(data); });
+}
+
+function loadLogo(row) {
+    var filename = row.data("filename");
+    $.get(APIurl, { cmd: "getimg", file: filename }, function(data) {
+        row.html("<img class='logo' src='data:image/png;base64,"+data['data']+"' />");
+    });
 }
 
 function displaystuff(data) {
-	console.log(data);
-	// I have data. I need to display stuff
-	var newHTML = "";
-	if (!("status" in data)) { return false; }
-	var status = data['status'];
-	if (status != null) {
-		if (status['title'] !== undefined) {
-			newHTML = "<h1>"+data['status']['title']+"</h1>";
-		}
-		if (typeof(data['status']['description']) != 'undefined')  {
-			newHTML = "<p>"+data['status']['description']+"</p>";
-		}
-	}
-	newHTML += "<table>";
-	$.each( data['data']['directories'], function(i, v) {
-		newHTML += "<tr><td><span class='clickable' data-id='"+v+"'>"+v+"</span></td></tr>";
-	});
-	$("#maintext").html(newHTML);
-   	$(".clickable").on("click", function(x) { loadData($(this).data('id')) });
+    window.mydata = data;
+    window.mystatus = data['status'];
+    // I have data. I need to display stuff
+    var newHTML = "";
+
+    // Just bail out if there's no status returned. 
+    if (!("status" in data)) { return false; }
+
+    var mystatus = data['status'];
+
+    // If this is a parent, these will be here.
+    if (mystatus['title'] != null) {
+        newHTML += "<h1>"+mystatus['title']+"</h1>";
+    }
+    if (mystatus['description'] != null)  {
+        newHTML += "<p>"+mystatus['description']+"</p>";
+    }
+    newHTML += "<table>";
+    $.each( data['data']['directories'], function(i, v) {
+        newHTML += "<tr><td><span class='clickable' data-id='"+v+"'>"+v+"</span></td></tr>";
+    });
+    newHTML += "</table>";
+
+    // If this is a league, these will be here.
+    if (mystatus['League'] != null) {
+        newHTML += "<h1>"+mystatus['League']+"</h1>";
+    }
+    if (mystatus['copyright_waiver'] != null)  {
+        newHTML += "<p>Copyright waiver agreed by: "+mystatus['copyright_waiver']+"</p>";
+    }
+    if (mystatus['facebook_page'] != null)  {
+        newHTML += "<p>Leagues Website/Facebook Page: <a href='"+mystatus['facebook_page']+"'>"+mystatus['facebook_page']+"</a></p>";
+    }
+
+    if ("teams" in mystatus) {
+        newHTML += "<table>";
+        $.each( mystatus['teams'], function(i, v) {
+            if ("logos" in v) {
+                newHTML += "<tr><td data-id='"+i+"' colspan=5><span class='leaguename'>"+v['description']+"</span></td></tr>";
+                console.log(v);
+                $.each( v['logos'], function (i, logo) { 
+		    newHTML += "<tr><td>"+logo['filename']+"</td>";
+                    if (logo['black'] == true) {
+                        newHTML += "<td class='logo blackbg used' data-filename='"+logo['filename']+"' data-loaded='false'>Loading...</td>";
+                    } else {
+                        newHTML += "<td></td>";
+                    } 
+                    if (logo['white'] == true) {
+                        newHTML += "<td class='logo whitebg used' data-filename='"+logo['filename']+"' data-loaded='false'>Loading...</td>";
+                    } else {
+                        newHTML += "<td></td>";
+                    } 
+                    if (logo['white'] == true) {
+                        newHTML += "<td class='logo otherbg used' data-filename='"+logo['filename']+"' data-loaded='false'>Loading...</td>";
+                    } else {
+                        newHTML += "<td></td>";
+                    } 
+                    newHTML += "</tr>";
+                });
+            }
+        });
+        newHTML += "</table>";
+    }
+    $("#maintext").html(newHTML);
+    $.each($(".used"), function() { loadLogo($(this)); });
+    $(".clickable").on("click", function(x) { loadData($(this).data('id')) });
 }
 
 </script>
-	
+    
 
 

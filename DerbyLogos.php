@@ -85,6 +85,14 @@ class Logos {
 		return $tmparr['directories'];
 	}
 
+	function getRawImage($file = null) {
+		if ($file == null)
+			return null;
+		$this->cleanPath($file);
+		$raw = file_get_contents($file);
+		return $raw;
+	}
+		
 
 	function noSubdirs($dir = null) {
 		$this->cleanPath($dir);
