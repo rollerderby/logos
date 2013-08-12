@@ -19,8 +19,8 @@ if ($a->noSubdirs()) {
 	$a->showLeague();
 } else {
 	// Subdirectories. List them.
-	$dirs = $a->getDirectories();
-	$a->showDirectories($dirs);
+	$dirs = $a->getAllUnderFolder();
+	$a->showDirectories($dirs['directories']);
 }
 
 ?>
