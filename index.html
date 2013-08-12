@@ -13,30 +13,31 @@
 
 </head>
 <body>
-<h1 id="foo">Hello</h1>
-<p>This is text.  <a href="#"  id="click" onclick="return false;">Click this</a> to do stuff</p>
+<h1 id="foo">Rollerder.by Logo Finder</h1>
+<p><a href="#"  id="click">Click this</a> to start again</p>
 <div id="maintext"></div>
 <script>
 $(function() {
    window.logoURL = "http://rollerder.by/logos";
    window.apiURL = window.logoURL+"/api.php";
 
-    $("#click").click(function() { 
-    console.log("derp"); 
-    $.get(apiURL, { cmd: "list" }, function(data) { displaystuff(data); });
-    });
+   window.onhashchange = loadData;
 
+   window.location.hash="";
+   loadData();
   
 
 });
 
-function loadData(dirName) {
+function loadData() {
+    // Figure out where we should be.
+    var dirName = window.location.hash.replace(/^#/, '');
     console.log("Given "+dirName);
     $.get(apiURL, { cmd: "list", dir: dirName })
     .done(function(data) { displaystuff(data); });
 }
 
-/* This is not what you want to do, but is here as an example */
+/* This is not what you want to do, but is here as an example. Use this to DOWNLOAD an image to do 'stuff' with it later. */
 function loadLogoData(row) {
     var filename = row.data("filename");
     $.get(apiURL, { cmd: "getimg", file: filename }, function(data) {
@@ -50,6 +51,7 @@ function loadLogo(row) {
 }
 
 function displaystuff(data) {
+    console.log(data);
     window.mydata = data;
     window.mystatus = data['status'];
     // I have data. I need to display stuff
@@ -115,7 +117,7 @@ function displaystuff(data) {
     }
     $("#maintext").html(newHTML);
     $.each($(".used"), function() { loadLogo($(this)); });
-    $(".clickable").on("click", function(x) { loadData($(this).data('id')) });
+    $(".clickable").on("click", function(x) { location.hash = $(this).data('id'); });
 }
 
 </script>
