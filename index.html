@@ -18,11 +18,12 @@
 <div id="maintext"></div>
 <script>
 $(function() {
-   window.APIurl = "http://rollerder.by/logos/api.php";
+   window.logoURL = "http://rollerder.by/logos";
+   window.apiURL = window.logoURL+"/api.php";
 
     $("#click").click(function() { 
     console.log("derp"); 
-    $.get(APIurl, { cmd: "list" }, function(data) { displaystuff(data); });
+    $.get(apiURL, { cmd: "list" }, function(data) { displaystuff(data); });
     });
 
   
@@ -31,15 +32,21 @@ $(function() {
 
 function loadData(dirName) {
     console.log("Given "+dirName);
-    $.get(APIurl, { cmd: "list", dir: dirName })
+    $.get(apiURL, { cmd: "list", dir: dirName })
     .done(function(data) { displaystuff(data); });
+}
+
+/* This is not what you want to do, but is here as an example */
+function loadLogoData(row) {
+    var filename = row.data("filename");
+    $.get(apiURL, { cmd: "getimg", file: filename }, function(data) {
+        row.html("<img class='logo' src='data:image/png;base64,"+data['data']+"' />");
+    });
 }
 
 function loadLogo(row) {
     var filename = row.data("filename");
-    $.get(APIurl, { cmd: "getimg", file: filename }, function(data) {
-        row.html("<img class='logo' src='data:image/png;base64,"+data['data']+"' />");
-    });
+    row.html("<img class='logo' src='"+window.logoURL+"/"+filename+"' />");
 }
 
 function displaystuff(data) {
